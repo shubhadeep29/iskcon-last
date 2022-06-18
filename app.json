@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Iskcon Collectors",
+    "slug": "IskconCollectors",
+    "platforms": ["ios", "android"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./app/assets/logo.png",
+    "splash": {
+      "image": "./app/assets/splash-screen.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iskoncollectors.iskcon"
+    },
+    "android": {
+      "package": "com.iskoncollectors.iskcon"
+    },
+    "description": "Iskcon Collectors App"
+  }
+}
