@@ -2,11 +2,32 @@ import client from "./client";
 import uuid from "react-native-uuid";
 import authStorage from "../auth/storage";
 
+import * as Application from "expo-application";
+
 // var newUuid = uuid.v4();
+
+const getUUIDWhenNotFoundFromStorage = async () => {
+  try {
+    let uuid = "";
+    if (Platform.OS === "android") {
+      uuid = Application.androidId;
+    }
+
+    if (Platform.OS === "ios") {
+      uuid = await Application.getIosIdForVendorAsync();
+    }
+
+    console.log("getUUIDWhenNotFoundFromStorage", uuid);
+
+    return uuid;
+  } catch (error) {
+    console.log("Error UUID not found", error);
+  }
+};
 
 const collectorDashboard = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/collectordashboard",
     { ...apiPayload },
@@ -22,7 +43,7 @@ const collectorDashboard = async ({ apiPayload, token }) => {
 
 const donarList = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/donarlist",
     { ...apiPayload },
@@ -38,7 +59,7 @@ const donarList = async ({ apiPayload, token }) => {
 
 const donarDetails = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/donardetails",
     { ...apiPayload },
@@ -54,7 +75,7 @@ const donarDetails = async ({ apiPayload, token }) => {
 
 const donationTypeList = async ({ user_id, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/donationtypelist",
     { user_id },
@@ -70,7 +91,7 @@ const donationTypeList = async ({ user_id, token }) => {
 
 const donarPayment = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/donarpayment",
     { ...apiPayload },
@@ -86,7 +107,7 @@ const donarPayment = async ({ apiPayload, token }) => {
 
 const bankDepositDetails = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/bankdepositdetails",
     { ...apiPayload },
@@ -102,7 +123,7 @@ const bankDepositDetails = async ({ apiPayload, token }) => {
 
 const collectionDeposit = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/collectiondeposit",
     { ...apiPayload },
@@ -118,7 +139,7 @@ const collectionDeposit = async ({ apiPayload, token }) => {
 
 const collectedDonationReport = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/collecteddonationlistreport",
     { ...apiPayload },
@@ -134,7 +155,7 @@ const collectedDonationReport = async ({ apiPayload, token }) => {
 
 const bankDepositReport = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/bankdepositlistreport",
     { ...apiPayload },
@@ -150,9 +171,25 @@ const bankDepositReport = async ({ apiPayload, token }) => {
 
 const bankDepositDetailsReport = async ({ apiPayload, token }) => {
   let newUuid = await authStorage.getUUID();
-  if (!newUuid) newUuid = uuid.v4();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
   return client.post(
     "/bankdepositlistdetailsreport",
+    { ...apiPayload },
+    {
+      headers: {
+        uuid: newUuid,
+        token: token,
+        appversion: "1.0",
+      },
+    }
+  );
+};
+
+const sendFacsimileSms = async ({ apiPayload, token }) => {
+  let newUuid = await authStorage.getUUID();
+  if (!newUuid) newUuid = getUUIDWhenNotFoundFromStorage();
+  return client.post(
+    "/sendfacsimilesms",
     { ...apiPayload },
     {
       headers: {
@@ -175,4 +212,5 @@ export default {
   collectedDonationReport,
   bankDepositReport,
   bankDepositDetailsReport,
+  sendFacsimileSms,
 };

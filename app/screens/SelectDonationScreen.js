@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -9,27 +9,28 @@ import {
   TextInput,
   Platform,
   ActivityIndicator,
-} from "react-native";
+  ScrollView,
+} from 'react-native';
 
-import allApi from "../api/allApi";
+import allApi from '../api/allApi';
 
-import colors from "../config/colors";
-import routes from "../navigation/routes";
-import Screen from "../components/Screen";
-import { Button } from "react-native-paper";
-import { MaskedTextInput } from "react-native-mask-text";
+import colors from '../config/colors';
+import routes from '../navigation/routes';
+import Screen from '../components/Screen';
+import { Button } from 'react-native-paper';
+import { MaskedTextInput } from 'react-native-mask-text';
 
-import { Dropdown } from "react-native-element-dropdown";
-import AuthContext from "../auth/context";
+import { Dropdown } from 'react-native-element-dropdown';
+import AuthContext from '../auth/context';
 
 function SelectDonationScreen({ navigation, route }) {
   const { user, setUser } = useContext(AuthContext);
-  const [amount, setAmount] = React.useState("");
+  const [amount, setAmount] = React.useState('');
   const [amountError, setAmountError] = useState(false);
   const [rangeError, setRangeError] = useState(false);
   const [selectedDonationType, setSelectedDonationType] = useState({});
   const [donationTypeData, setDonationTypeData] = useState([]);
-  const [apiErrorMsg, setApiErrorMsg] = useState("");
+  const [apiErrorMsg, setApiErrorMsg] = useState('');
 
   let donorData = route.params;
 
@@ -50,16 +51,16 @@ function SelectDonationScreen({ navigation, route }) {
   }, [data]);
 
   useEffect(() => {
-    selectedDonationType.donation_type === "F"
+    selectedDonationType.donation_type === 'F'
       ? setAmount(selectedDonationType.fixed_amount)
-      : setAmount("");
+      : setAmount('');
   }, [selectedDonationType]);
 
   const checkRange = () => {
     if (
       selectedDonationType &&
       Object.keys(selectedDonationType).length > 0 &&
-      selectedDonationType.donation_type === "V" &&
+      selectedDonationType.donation_type === 'V' &&
       !(
         parseFloat(selectedDonationType.minimum_amount) <= parseFloat(amount) &&
         parseFloat(selectedDonationType.maximum_amount) >= parseFloat(amount)
@@ -111,9 +112,9 @@ function SelectDonationScreen({ navigation, route }) {
         style={{
           paddingVertical: 12,
           paddingHorizontal: 8,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           backgroundColor:
             item.donation_id === selectedDonationType.donation_id
               ? colors.primary
@@ -133,7 +134,7 @@ function SelectDonationScreen({ navigation, route }) {
           <Text
             style={{
               fontSize: 14,
-              fontWeight: "bold",
+              fontWeight: 'bold',
             }}
           >
             INR {parseFloat(item.fixed_amount).toFixed(2)}
@@ -146,13 +147,19 @@ function SelectDonationScreen({ navigation, route }) {
   return (
     <Screen
       style={{
-        padding: 20,
-        justifyContent: "space-between",
+        padding: 10,
+        paddingBottom: 20,
+        justifyContent: 'space-between',
       }}
     >
-      <View>
+      <ScrollView
+        style={{ padding: 10 }}
+        keyboardDismissMode='on-drag'
+        keyboardShouldPersistTaps='handled'
+        contentInsetAdjustmentBehavior='always'
+      >
         {loading ? (
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size='large' color={colors.primary} />
         ) : null}
 
         {!error && !loading && (
@@ -163,15 +170,15 @@ function SelectDonationScreen({ navigation, route }) {
             data={donationTypeData}
             // search
             // searchPlaceholder="Search"
-            labelField="donation_name"
-            valueField="donation_id"
-            label="donation_name"
+            labelField='donation_name'
+            valueField='donation_id'
+            label='donation_name'
             labelStyle={{ fontSize: 30 }}
-            placeholder="Select any donation type"
+            placeholder='Select any donation type'
             value={selectedDonationType?.donation_id}
             onChange={(item) => {
               setSelectedDonationType(item);
-              setAmount("");
+              setAmount('');
               setAmountError(false);
               setRangeError(false);
             }}
@@ -182,14 +189,14 @@ function SelectDonationScreen({ navigation, route }) {
             //   />
             // )}
             renderItem={(item) => _renderItem(item)}
-            textError="Error"
+            textError='Error'
           />
         )}
 
         {selectedDonationType &&
         Object.keys(selectedDonationType).length > 0 ? (
           <>
-            {selectedDonationType.donation_type === "V" ? (
+            {selectedDonationType.donation_type === 'V' ? (
               <Text style={{ marginTop: 20, color: colors.secondary }}>
                 Please enter any amount between
                 {` ${selectedDonationType.minimum_amount} - ${selectedDonationType.maximum_amount}`}
@@ -199,26 +206,26 @@ function SelectDonationScreen({ navigation, route }) {
               style={{
                 marginTop: 20,
                 backgroundColor: colors.greyShade,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
                 padding: 5,
               }}
             >
-              <Text style={{ flex: 1, flexWrap: "wrap" }}>
+              <Text style={{ flex: 1, flexWrap: 'wrap' }}>
                 {selectedDonationType.donation_name}
               </Text>
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}
               >
                 <View
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                     backgroundColor: colors.primary,
                     padding: 5,
                     borderRadius: 4,
@@ -226,7 +233,7 @@ function SelectDonationScreen({ navigation, route }) {
                     height: 30,
                   }}
                 >
-                  <Text style={{ color: colors.white, fontWeight: "800" }}>
+                  <Text style={{ color: colors.white, fontWeight: '800' }}>
                     INR
                   </Text>
                   {/* <MaskedTextInput
@@ -255,13 +262,13 @@ function SelectDonationScreen({ navigation, route }) {
               placeholderTextColor={colors.white}
             /> */}
                   <TextInput
-                    type="currency"
+                    type='currency'
                     style={{
                       width: 80,
-                      textAlign: "right",
+                      textAlign: 'right',
                       paddingRight: 10,
                       color: colors.white,
-                      fontWeight: "bold",
+                      fontWeight: 'bold',
                     }}
                     selectionColor={colors.white}
                     onChangeText={(newAmount) => {
@@ -271,10 +278,10 @@ function SelectDonationScreen({ navigation, route }) {
                       // setSelectedDonationType(null);
                     }}
                     value={amount.toString()}
-                    placeholder="0.00"
-                    keyboardType="numeric"
+                    placeholder='0.00'
+                    keyboardType='numeric'
                     placeholderTextColor={colors.white}
-                    editable={selectedDonationType.donation_type === "V"}
+                    editable={selectedDonationType.donation_type === 'V'}
                   />
                   {/* <TextInput
             mode="flat"
@@ -317,16 +324,16 @@ function SelectDonationScreen({ navigation, route }) {
             Please enter amount between the specified range
           </Text>
         )}
-      </View>
+      </ScrollView>
 
       <View
         style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
+          flexDirection: 'row',
+          justifyContent: 'space-around',
         }}
       >
         <Button
-          mode="contained"
+          mode='contained'
           style={{ width: 150, backgroundColor: colors.grey }}
           labelStyle={{ color: colors.white }}
           onPress={() => navigation.goBack()}
@@ -334,7 +341,7 @@ function SelectDonationScreen({ navigation, route }) {
           Back
         </Button>
         <Button
-          mode="contained"
+          mode='contained'
           style={{
             width: 150,
             backgroundColor: colors.secondary,
@@ -364,8 +371,8 @@ const styles = StyleSheet.create({
     height: 18,
   },
   shadow: {
-    marginTop: Platform.OS === "android" ? -25 : 0,
-    shadowColor: "#000",
+    marginTop: Platform.OS === 'android' ? -25 : 0,
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -7,92 +7,92 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
+} from 'react-native';
 
-import moment from "moment";
+import moment from 'moment';
 
-import colors from "../config/colors";
-import routes from "../navigation/routes";
-import Screen from "../components/Screen";
-import { Button, TextInput } from "react-native-paper";
+import colors from '../config/colors';
+import routes from '../navigation/routes';
+import Screen from '../components/Screen';
+import { Button, TextInput } from 'react-native-paper';
 // import { Dropdown } from "react-native-element-dropdown";
-import DropDown from "react-native-paper-dropdown";
-import { isNumber } from "../lib";
-import { DatePickerInput } from "react-native-paper-dates";
+import DropDown from 'react-native-paper-dropdown';
+import { isNumber } from '../lib';
+import { DatePickerInput } from 'react-native-paper-dates';
 
 function DonorDetailsScreen({ navigation, route }) {
   const ref = React.useRef(null);
 
-  const dateFormat = "DD-MM-YYYY";
-  const dateFormatForSubmit = "YYYY-MM-DD";
+  const dateFormat = 'DD-MM-YYYY';
+  const dateFormatForSubmit = 'YYYY-MM-DD';
 
   const donorData = route.params;
 
   const [showDropDown, setShowDropDown] = useState(false);
 
-  const [donor_type, setdonor_type] = useState("new");
+  const [donor_type, setdonor_type] = useState('new');
   const [allError, setAllError] = useState(false);
 
-  const [donor_phone, setdonor_phone] = useState("");
+  const [donor_phone, setdonor_phone] = useState('');
   const [donor_phoneError, setdonor_phoneError] = useState(false);
 
-  const [donor_name, setdonor_name] = useState("");
+  const [donor_name, setdonor_name] = useState('');
   const [donor_nameError, setdonor_nameError] = useState(false);
 
-  const [donor_gender, setdonor_gender] = useState("");
+  const [donor_gender, setdonor_gender] = useState('');
   const [gender_error, setgender_Error] = useState(false);
   const genderList = [
     {
-      label: "Male",
-      value: "Male",
+      label: 'Male',
+      value: 'Male',
     },
     {
-      label: "Female",
-      value: "Female",
+      label: 'Female',
+      value: 'Female',
     },
     {
-      label: "Others",
-      value: "Others",
+      label: 'Others',
+      value: 'Others',
     },
   ];
 
   const [donor_dob, setdonor_dob] = useState(new Date());
   const [donor_dobError, setdonor_dobError] = useState(false);
 
-  const [donor_address_one, setdonor_address_one] = useState("");
+  const [donor_address_one, setdonor_address_one] = useState('');
   const [donor_address_oneError, setdonor_address_oneError] = useState(false);
 
-  const [donor_country, setdonor_country] = useState("");
+  const [donor_country, setdonor_country] = useState('');
   const [donor_countryError, setdonor_countryError] = useState(false);
 
-  const [donor_state, setdonor_state] = useState("");
+  const [donor_state, setdonor_state] = useState('');
   const [donor_stateError, setdonor_stateError] = useState(false);
 
-  const [donor_district, setdonor_district] = useState("");
+  const [donor_district, setdonor_district] = useState('');
   const [donor_districtError, setdonor_districtError] = useState(false);
 
-  const [donor_city, setdonor_city] = useState("");
+  const [donor_city, setdonor_city] = useState('');
   const [donor_cityError, setdonor_cityError] = useState(false);
 
-  const [donor_pincode, setdonor_pincode] = useState("");
+  const [donor_pincode, setdonor_pincode] = useState('');
   const [donor_pincodeError, setdonor_pincodeError] = useState(false);
 
-  const [donor_email, setdonor_email] = useState("");
+  const [donor_email, setdonor_email] = useState('');
   const [donor_emailError, setdonor_emailError] = useState(false);
 
-  const [certificate_require, setcertificate_require] = useState("yes");
+  const [certificate_require, setcertificate_require] = useState('yes');
   const [certificate_requireError, setcertificate_requireError] =
     useState(false);
 
-  const [donor_panno, setdonor_panno] = useState("");
+  const [donor_panno, setdonor_panno] = useState('');
   const [donor_pannoError, setdonor_pannoError] = useState(false);
 
   useEffect(() => {
     if (donorData && Object.keys(donorData).length > 1) {
-      setdonor_type("old");
+      setdonor_type('old');
     }
     if (donorData && Object.keys(donorData).length === 1) {
-      setdonor_type("new");
+      setdonor_type('new');
       setdonor_phone(donorData.donor_phone);
     }
   }, []);
@@ -108,16 +108,16 @@ function DonorDetailsScreen({ navigation, route }) {
   };
 
   const checkData = () => {
-    if (donor_phone.trim() === "") return false;
-    if (donor_name.trim() === "") return false;
-    if (donor_gender.trim() === "") return false;
-    if (donor_dob === "") return false;
-    if (donor_address_one.trim() === "") return false;
+    if (donor_phone.trim() === '') return false;
+    if (donor_name.trim() === '') return false;
+    if (donor_gender.trim() === '') return false;
+    if (donor_dob === '') return false;
+    if (donor_address_one.trim() === '') return false;
     // if (donor_country.trim() === "") return false;
-    if (donor_state.trim() === "") return false;
-    if (donor_district.trim() === "") return false;
-    if (donor_city.trim() === "") return false;
-    if (donor_pincode.trim() === "") return false;
+    if (donor_state.trim() === '') return false;
+    if (donor_district.trim() === '') return false;
+    if (donor_city.trim() === '') return false;
+    if (donor_pincode.trim() === '') return false;
     // if (donor_email.trim() === "") return false;
 
     return true;
@@ -132,10 +132,10 @@ function DonorDetailsScreen({ navigation, route }) {
     //   return false;
     // }
 
-    if (donor_type === "old") {
+    if (donor_type === 'old') {
       donorDataAll = { ...donorData, donor_type };
     }
-    if (donor_type === "new") {
+    if (donor_type === 'new') {
       if (!checkData()) {
         setAllError(true);
         ref.current.scrollTo({ x: 0, y: 0, animated: true });
@@ -163,19 +163,19 @@ function DonorDetailsScreen({ navigation, route }) {
 
       donorDataAll = {
         donor_type,
-        donor_phone: "+91" + donor_phone,
+        donor_phone: '+91' + donor_phone,
         donor_name,
         donor_gender,
         donor_dob: moment(new Date(donor_dob)).format(dateFormatForSubmit),
         donor_address_one,
-        donor_country: "India",
+        donor_country: 'India',
         donor_state,
         donor_district,
         donor_city,
         donor_pincode,
-        donor_email: donor_email.length > 0 ? donor_email : "NA",
-        certificate_require: "NA",
-        donor_panno: "NA",
+        donor_email: donor_email.length > 0 ? donor_email : 'NA',
+        certificate_require: 'NA',
+        donor_panno: 'NA',
       };
     }
 
@@ -187,37 +187,37 @@ function DonorDetailsScreen({ navigation, route }) {
       <ScrollView
         ref={ref}
         style={{ padding: 10 }}
-        keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps="handled"
-        contentInsetAdjustmentBehavior="always"
+        keyboardDismissMode='on-drag'
+        keyboardShouldPersistTaps='handled'
+        contentInsetAdjustmentBehavior='always'
       >
-        {donor_type === "old" ? (
+        {donor_type === 'old' ? (
           <View>
             <View>
               <Text style={{ fontSize: 12 }}>Donor Mobile No.</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {donorData.donor_phone}
               </Text>
             </View>
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>Full Name</Text>
-              <Text style={{ fontWeight: "bold" }}>{donorData.donor_name}</Text>
+              <Text style={{ fontWeight: 'bold' }}>{donorData.donor_name}</Text>
             </View>
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>Gender</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {donorData.donor_gender}
               </Text>
             </View>
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>Date of Birth</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {moment(donorData.donor_dob).format(dateFormat)}
               </Text>
             </View>
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>Address</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {donorData.donor_address_one}
               </Text>
             </View>
@@ -225,18 +225,18 @@ function DonorDetailsScreen({ navigation, route }) {
             <View
               style={{
                 marginTop: 15,
-                flexDirection: "row",
+                flexDirection: 'row',
               }}
             >
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 12 }}>State</Text>
-                <Text style={{ fontWeight: "bold" }}>
+                <Text style={{ fontWeight: 'bold' }}>
                   {donorData.donor_state}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 12 }}>District</Text>
-                <Text style={{ fontWeight: "bold" }}>
+                <Text style={{ fontWeight: 'bold' }}>
                   {donorData.donor_district}
                 </Text>
               </View>
@@ -245,18 +245,18 @@ function DonorDetailsScreen({ navigation, route }) {
             <View
               style={{
                 marginTop: 15,
-                flexDirection: "row",
+                flexDirection: 'row',
               }}
             >
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 12 }}>City/Village</Text>
-                <Text style={{ fontWeight: "bold" }}>
+                <Text style={{ fontWeight: 'bold' }}>
                   {donorData.donor_city}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 12 }}>PIN</Text>
-                <Text style={{ fontWeight: "bold" }}>
+                <Text style={{ fontWeight: 'bold' }}>
                   {donorData.donor_pincode}
                 </Text>
               </View>
@@ -264,43 +264,43 @@ function DonorDetailsScreen({ navigation, route }) {
 
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>Country</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {donorData.donor_country}
               </Text>
             </View>
 
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>Email ID</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {donorData.donor_email}
               </Text>
             </View>
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>80G Required</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {donorData.certificate_require}
               </Text>
             </View>
             <View style={{ marginTop: 15 }}>
               <Text style={{ fontSize: 12 }}>PAN CARD No.</Text>
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: 'bold' }}>
                 {donorData.donor_panno}
               </Text>
             </View>
           </View>
-        ) : donor_type === "new" ? (
+        ) : donor_type === 'new' ? (
           <View>
             {allError && (
-              <Text style={{ textAlign: "center", color: colors.danger }}>
+              <Text style={{ textAlign: 'center', color: colors.danger }}>
                 Please enter/select all the required fields
               </Text>
             )}
             <TextInput
-              donor_type="flat"
-              label="Donor Mobile No.  *"
-              placeholder="Enter mobile number"
+              donor_type='flat'
+              label='Donor Mobile No.  *'
+              placeholder='Enter mobile number'
               left={
-                <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
+                <TextInput.Affix text='+91  ' style={{ marginRight: 10 }} />
               }
               activeUnderlineColor={colors.primary}
               underlineColor={colors.grey}
@@ -310,7 +310,7 @@ function DonorDetailsScreen({ navigation, route }) {
                 setAllError(false);
                 setdonor_phoneError(false);
               }}
-              keyboardType="numeric"
+              keyboardType='numeric'
               style={{ backgroundColor: colors.white }}
             />
             {donor_phoneError && (
@@ -319,9 +319,9 @@ function DonorDetailsScreen({ navigation, route }) {
               </Text>
             )}
             <TextInput
-              donor_type="flat"
-              label="Full Name *"
-              placeholder="Enter full name"
+              donor_type='flat'
+              label='Full Name *'
+              placeholder='Enter full name'
               // left={
               //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
               // }
@@ -342,9 +342,9 @@ function DonorDetailsScreen({ navigation, route }) {
               </Text>
             )}
             <TextInput
-              donor_type="flat"
-              label="Email"
-              placeholder="Enter email"
+              donor_type='flat'
+              label='Email'
+              placeholder='Enter email'
               // left={
               //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
               // }
@@ -356,7 +356,7 @@ function DonorDetailsScreen({ navigation, route }) {
                 setAllError(false);
                 setdonor_emailError(false);
               }}
-              autoCapitalize="none"
+              autoCapitalize='none'
               // keyboardType="numeric"
               style={{ backgroundColor: colors.white }}
             />
@@ -387,8 +387,8 @@ function DonorDetailsScreen({ navigation, route }) {
             )} */}
             <View style={{}}>
               <DropDown
-                label={"Gender *"}
-                donor_type={"flat"}
+                label={'Gender *'}
+                donor_type={'flat'}
                 visible={showDropDown}
                 showDropDown={() => setShowDropDown(true)}
                 onDismiss={() => setShowDropDown(false)}
@@ -452,10 +452,10 @@ function DonorDetailsScreen({ navigation, route }) {
               )}
             </View> */}
             <DatePickerInput
-              mode="flat"
-              locale="en-GB"
+              mode='flat'
+              locale='en-GB'
               error
-              label="Date of birth *"
+              label='Date of birth *'
               value={donor_dob}
               onChange={(d) => {
                 setdonor_dob(d);
@@ -463,7 +463,7 @@ function DonorDetailsScreen({ navigation, route }) {
                 setdonor_dobError(false);
               }}
               // onChange={(d) => setInputDate(d)}
-              inputMode="start"
+              inputMode='start'
               activeUnderlineColor={colors.primary}
               underlineColor={colors.grey}
               style={{ backgroundColor: colors.white, marginTop: 2 }}
@@ -503,9 +503,9 @@ function DonorDetailsScreen({ navigation, route }) {
               <View style={{ marginTop: -20 }}></View>
             )}
             <TextInput
-              donor_type="flat"
-              label="Address *"
-              placeholder="Enter Address"
+              donor_type='flat'
+              label='Address *'
+              placeholder='Enter Address'
               // left={
               //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
               // }
@@ -553,76 +553,42 @@ function DonorDetailsScreen({ navigation, route }) {
             <View
               style={{
                 flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginBottom: 20,
               }}
             >
               <TextInput
-                donor_type="flat"
-                label="State *"
-                placeholder="Enter state"
+                donor_type='flat'
+                label='PIN *'
+                placeholder='Enter pin code'
                 // left={
                 //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
                 // }
                 activeUnderlineColor={colors.primary}
                 underlineColor={colors.grey}
-                value={donor_state}
+                value={donor_pincode}
                 onChangeText={(number) => {
-                  setdonor_state(number);
+                  setdonor_pincode(number);
                   setAllError(false);
                 }}
-                // keyboardType="numeric"
+                maxLength={6}
+                keyboardType='numeric'
                 style={{
                   backgroundColor: colors.white,
                   flex: 1,
                   marginRight: 5,
                 }}
               />
-              {donor_stateError && (
+              {donor_pincodeError && (
                 <Text style={{ marginLeft: 10, color: colors.danger }}>
-                  Please enter state
+                  Please enter pin
                 </Text>
               )}
               <TextInput
-                donor_type="flat"
-                label="District *"
-                placeholder="Enter district"
-                // left={
-                //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
-                // }
-                activeUnderlineColor={colors.primary}
-                underlineColor={colors.grey}
-                value={donor_district}
-                onChangeText={(number) => {
-                  setdonor_district(number);
-                  setAllError(false);
-                }}
-                // keyboardType="numeric"
-                style={{
-                  backgroundColor: colors.white,
-                  flex: 1,
-                  marginLeft: 5,
-                }}
-              />
-              {donor_districtError && (
-                <Text style={{ marginLeft: 10, color: colors.danger }}>
-                  Please enter district
-                </Text>
-              )}
-            </View>
-
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 20,
-              }}
-            >
-              <TextInput
-                donor_type="flat"
-                label="City/Village *"
-                placeholder="Enter city/village"
+                donor_type='flat'
+                label='City/Village *'
+                placeholder='Enter city/village'
                 // left={
                 //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
                 // }
@@ -637,7 +603,7 @@ function DonorDetailsScreen({ navigation, route }) {
                 style={{
                   backgroundColor: colors.white,
                   flex: 1,
-                  marginRight: 5,
+                  marginLeft: 5,
                 }}
               />
               {donor_cityError && (
@@ -645,31 +611,65 @@ function DonorDetailsScreen({ navigation, route }) {
                   Please enter city/village name
                 </Text>
               )}
+            </View>
+
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
               <TextInput
-                donor_type="flat"
-                label="PIN *"
-                placeholder="Enter pin code"
+                donor_type='flat'
+                label='District *'
+                placeholder='Enter district'
                 // left={
                 //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
                 // }
                 activeUnderlineColor={colors.primary}
                 underlineColor={colors.grey}
-                value={donor_pincode}
+                value={donor_district}
                 onChangeText={(number) => {
-                  setdonor_pincode(number);
+                  setdonor_district(number);
                   setAllError(false);
                 }}
-                maxLength={6}
-                keyboardType="numeric"
+                // keyboardType="numeric"
+                style={{
+                  backgroundColor: colors.white,
+                  flex: 1,
+                  marginRight: 5,
+                }}
+              />
+              {donor_districtError && (
+                <Text style={{ marginLeft: 10, color: colors.danger }}>
+                  Please enter district
+                </Text>
+              )}
+              <TextInput
+                donor_type='flat'
+                label='State *'
+                placeholder='Enter state'
+                // left={
+                //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
+                // }
+                activeUnderlineColor={colors.primary}
+                underlineColor={colors.grey}
+                value={donor_state}
+                onChangeText={(number) => {
+                  setdonor_state(number);
+                  setAllError(false);
+                }}
+                // keyboardType="numeric"
                 style={{
                   backgroundColor: colors.white,
                   flex: 1,
                   marginLeft: 5,
                 }}
               />
-              {donor_pincodeError && (
+              {donor_stateError && (
                 <Text style={{ marginLeft: 10, color: colors.danger }}>
-                  Please enter pin
+                  Please enter state
                 </Text>
               )}
             </View>
@@ -764,12 +764,12 @@ function DonorDetailsScreen({ navigation, route }) {
       <View
         style={{
           marginTop: 15,
-          flexDirection: "row",
-          justifyContent: "space-around",
+          flexDirection: 'row',
+          justifyContent: 'space-around',
         }}
       >
         <Button
-          mode="contained"
+          mode='contained'
           style={{ width: 150, backgroundColor: colors.grey }}
           labelStyle={{ color: colors.white }}
           onPress={() => navigation.goBack()}
@@ -777,7 +777,7 @@ function DonorDetailsScreen({ navigation, route }) {
           Back
         </Button>
         <Button
-          mode="contained"
+          mode='contained'
           style={{
             width: 150,
             backgroundColor: colors.secondary,
@@ -796,7 +796,7 @@ const styles = StyleSheet.create({
   screen: {
     padding: 10,
     paddingBottom: 20,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
 
   icon: {
@@ -814,8 +814,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   shadow: {
-    marginTop: Platform.OS === "android" ? 40 : 70,
-    shadowColor: "#000",
+    marginTop: Platform.OS === 'android' ? 40 : 70,
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,

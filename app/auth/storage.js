@@ -9,18 +9,11 @@ const storeUUID = async () => {
   try {
     let uuid = "";
     if (Platform.OS === "android") {
-      console.log(1);
       uuid = Application.androidId;
     }
 
     if (Platform.OS === "ios") {
-      console.log(2);
       uuid = await Application.getIosIdForVendorAsync();
-    }
-
-    if (uuid === "") {
-      console.log(3);
-      uuid = uuidv4();
     }
 
     console.log(uuid);
@@ -33,7 +26,9 @@ const storeUUID = async () => {
 
 const getUUID = async () => {
   try {
-    return await SecureStore.getItemAsync("secure_deviceId");
+    const storedUUID = await SecureStore.getItemAsync("secure_deviceId");
+    // console.log("storedUUID", storedUUID);
+    return storedUUID;
   } catch (error) {
     console.log("Error getting the UUID", error);
   }

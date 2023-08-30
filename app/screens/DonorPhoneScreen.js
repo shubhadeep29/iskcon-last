@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -7,23 +7,23 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
+} from 'react-native';
 
-import colors from "../config/colors";
-import routes from "../navigation/routes";
-import Screen from "../components/Screen";
-import { Button, TextInput } from "react-native-paper";
-import AuthContext from "../auth/context";
-import allApi from "../api/allApi";
-import { isNumber } from "../lib";
+import colors from '../config/colors';
+import routes from '../navigation/routes';
+import Screen from '../components/Screen';
+import { Button, TextInput } from 'react-native-paper';
+import AuthContext from '../auth/context';
+import allApi from '../api/allApi';
+import { isNumber } from '../lib';
 
 function DonorPhoneScreen({ navigation, route }) {
   const { user, setUser } = useContext(AuthContext);
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState(false);
   const [donorList, setDonorList] = useState([]);
   const [selectedDonor, setSelectedDonor] = useState({});
-  const [apiErrorMsg, setApiErrorMsg] = useState("");
+  const [apiErrorMsg, setApiErrorMsg] = useState('');
   const [apiSuccess, setApiSuccess] = useState(false);
 
   const donorNationality = route.params;
@@ -40,7 +40,7 @@ function DonorPhoneScreen({ navigation, route }) {
     if (phoneNumber && phoneNumber.length === 10 && isNumber(phoneNumber)) {
       let apiPayload = {
         user_id: user.user_id,
-        donor_phone: "+91" + phoneNumber,
+        donor_phone: '+91' + phoneNumber,
       };
       request({ apiPayload, token: user.token });
     } else {
@@ -78,14 +78,14 @@ function DonorPhoneScreen({ navigation, route }) {
   const getSelectedDonorDetails = () => {
     let apiPayload = {
       user_id: user.user_id,
-      donor_phone: "+91" + phoneNumber,
+      donor_phone: '+91' + phoneNumber,
       ...selectedDonor,
     };
     selectedDonorDetails.request({ apiPayload, token: user.token });
   };
 
   const handleProceed = () => {
-    setApiErrorMsg("");
+    setApiErrorMsg('');
     if (phoneNumber && phoneNumber.length === 10 && isNumber(phoneNumber)) {
       if (selectedDonor && Object.keys(selectedDonor).length === 0) {
         let donorData = {
@@ -100,13 +100,14 @@ function DonorPhoneScreen({ navigation, route }) {
     }
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = (item, index) => (
     <TouchableOpacity
+      key={index}
       style={{
         flex: 1,
         marginBottom: 5,
         borderRadius: 10,
-        alignItems: "center",
+        alignItems: 'center',
         padding: 5,
         borderWidth: 3,
         borderColor:
@@ -119,7 +120,7 @@ function DonorPhoneScreen({ navigation, route }) {
       <Text
         style={{
           fontSize: 16,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           color:
             selectedDonor.donor_id === item.donor_id
               ? colors.primary
@@ -131,55 +132,30 @@ function DonorPhoneScreen({ navigation, route }) {
     </TouchableOpacity>
   );
 
-  const listFooterComponent = () => (
-    <TouchableOpacity
-      style={{
-        flex: 1,
-        marginTop: 5,
-        borderRadius: 10,
-        alignItems: "center",
-        padding: 5,
-        borderWidth: 3,
-        borderColor:
-          selectedDonor && Object.keys(selectedDonor).length === 0
-            ? colors.primary
-            : colors.grey,
-      }}
-      onPress={() => setSelectedDonor({})}
-    >
-      <Text
-        style={{
-          fontSize: 16,
-          fontWeight: "bold",
-          color:
-            selectedDonor && Object.keys(selectedDonor).length === 0
-              ? colors.primary
-              : colors.grey,
-        }}
-      >
-        Add new
-      </Text>
-    </TouchableOpacity>
-  );
-
   return (
     <Screen
       style={{
-        padding: 20,
-        justifyContent: "space-between",
+        padding: 10,
+        paddingBottom: 20,
+        justifyContent: 'space-between',
       }}
     >
-      <View>
+      <ScrollView
+        style={{ padding: 10 }}
+        keyboardDismissMode='on-drag'
+        keyboardShouldPersistTaps='handled'
+        contentInsetAdjustmentBehavior='always'
+      >
         <TextInput
-          mode="flat"
+          mode='flat'
           label="Donor's Mobile No."
-          placeholder="Enter mobile number"
-          left={<TextInput.Affix text="+91  " style={{ marginRight: 10 }} />}
+          placeholder='Enter mobile number'
+          left={<TextInput.Affix text='+91  ' style={{ marginRight: 10 }} />}
           activeUnderlineColor={colors.primary}
           underlineColor={colors.grey}
           value={phoneNumber}
           onChangeText={(number) => setPhoneNumber(number)}
-          keyboardType="numeric"
+          keyboardType='numeric'
           style={{ backgroundColor: colors.white }}
         />
         {phoneNumberError && (
@@ -187,47 +163,97 @@ function DonorPhoneScreen({ navigation, route }) {
             Please enter a valid phone number
           </Text>
         )}
-        <Button
-          mode="contained"
-          loading={loading}
+        <View
           style={{
-            marginTop: 15,
-            backgroundColor: colors.secondary,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginVertical: 15,
           }}
-          labelStyle={{ color: colors.white }}
-          onPress={getDonorList}
         >
-          Get details
-        </Button>
+          <Button
+            mode='contained'
+            style={{
+              backgroundColor: colors.secondary,
+            }}
+            labelStyle={{ color: colors.white }}
+            onPress={() => {
+              let donorData = {
+                donor_phone: phoneNumber,
+              };
+              navigation.navigate(routes.DONOR_DETAILS, donorData);
+            }}
+          >
+            Add New
+          </Button>
+          <Button
+            mode='contained'
+            loading={loading}
+            style={{
+              width: 150,
+              backgroundColor: colors.secondary,
+            }}
+            labelStyle={{ color: colors.white }}
+            onPress={getDonorList}
+          >
+            Get details
+          </Button>
+        </View>
+
         {donorList.length > 0 && apiSuccess ? (
-          <FlatList
-            style={{ marginTop: 10 }}
-            data={donorList}
-            renderItem={renderItem}
-            ListFooterComponent={listFooterComponent}
-            keyExtractor={(item) => item.donor_name}
-          />
+          <>
+            {donorList.map((item, index) => {
+              return renderItem(item, index);
+            })}
+            {/* <TouchableOpacity
+              style={{
+                flex: 1,
+                borderRadius: 10,
+                alignItems: 'center',
+                padding: 5,
+                borderWidth: 3,
+                borderColor:
+                  selectedDonor && Object.keys(selectedDonor).length === 0
+                    ? colors.primary
+                    : colors.grey,
+              }}
+              onPress={() => setSelectedDonor({})}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color:
+                    selectedDonor && Object.keys(selectedDonor).length === 0
+                      ? colors.primary
+                      : colors.grey,
+                }}
+              >
+                Add new
+              </Text>
+            </TouchableOpacity> */}
+          </>
         ) : apiSuccess ? (
           <Text style={{ marginTop: 5 }}>
             No previous details found, Please press on "ADD NEW" to enter new
             details
           </Text>
         ) : null}
-      </View>
+      </ScrollView>
       {apiErrorMsg ? (
-        <Text style={{ textAlign: "center", color: colors.danger }}>
+        <Text style={{ textAlign: 'center', color: colors.danger }}>
           {apiErrorMsg}
         </Text>
       ) : null}
 
       <View
         style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
+          flexDirection: 'row',
+          justifyContent: 'space-around',
         }}
       >
         <Button
-          mode="contained"
+          mode='contained'
           style={{ width: 150, backgroundColor: colors.grey }}
           labelStyle={{ color: colors.white }}
           onPress={() => navigation.goBack()}
@@ -235,7 +261,7 @@ function DonorPhoneScreen({ navigation, route }) {
           Back
         </Button>
         <Button
-          mode="contained"
+          mode='contained'
           style={{
             width: 150,
             backgroundColor: colors.secondary,
@@ -245,7 +271,7 @@ function DonorPhoneScreen({ navigation, route }) {
           loading={selectedDonorDetails.loading}
           disabled={!apiSuccess}
         >
-          {donorList.length === 0 && apiSuccess ? "Add new" : "Proceed"}
+          {donorList.length === 0 && apiSuccess ? 'Add new' : 'Proceed'}
         </Button>
       </View>
     </Screen>

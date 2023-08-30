@@ -21,8 +21,15 @@ import { Button, Dialog, TextInput } from "react-native-paper";
 import allApi from "../api/allApi";
 import useApi from "../hooks/useApi";
 
+import routes from "../navigation/routes";
 import AuthContext from "../auth/context";
 import { useFocusEffect } from "@react-navigation/native";
+import {
+  generateCashPdf,
+  generateCashPdfFromDeposit,
+  generateChequePdf,
+  generateChequePdfFromDeposit,
+} from "../lib";
 
 function BankDepositScreen({ navigation, route }) {
   const { user, setUser } = useContext(AuthContext);
@@ -143,14 +150,19 @@ function BankDepositScreen({ navigation, route }) {
   let collectionDepositApi = useApi(allApi.collectionDeposit);
   const [collectionDepositApiSuccess, setCollectionDepositApiSuccess] =
     useState(false);
+  const [collectionDepositApiResponse, setCollectionDepositApiResponse] =
+    useState({});
+
   useEffect(() => {
     if (
       collectionDepositApi.data &&
       Object.keys(collectionDepositApi.data).length > 0
     ) {
       if (collectionDepositApi.data.status === 1) {
+        setCollectionDepositApiResponse(collectionDepositApi.data.result.data);
         setCollectionDepositApiSuccess(true);
       } else {
+        setCollectionDepositApiResponse({});
         setApiErrorMsg(collectionDepositApi.data.message);
       }
     }
@@ -263,14 +275,42 @@ function BankDepositScreen({ navigation, route }) {
             marginBottom: 20,
           }}
         >
-          <Button
-            mode="contained"
-            onPress={() => resetScreen()}
-            style={{ width: 80 }}
-            labelStyle={{ color: colors.white }}
-          >
-            Ok
-          </Button>
+          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+            {collectionDepositApiResponse &&
+            Object.keys(collectionDepositApiResponse).length > 0 ? (
+              <Button
+                mode="contained"
+                labelStyle={{ fontSize: 12, color: colors.white }}
+                style={{
+                  backgroundColor: colors.primary,
+                  marginRight: 5,
+                }}
+                // loading={
+                //   bankDepositReportDetailsApi.loading &&
+                //   depositData === item.deposit_id
+                // }
+                onPress={() => {
+                  depositMode === "CASH"
+                    ? generateCashPdfFromDeposit(collectionDepositApiResponse)
+                    : generateChequePdfFromDeposit(
+                        collectionDepositApiResponse
+                      );
+
+                  resetScreen();
+                }}
+              >
+                Download
+              </Button>
+            ) : null}
+            <Button
+              mode="contained"
+              onPress={() => resetScreen()}
+              style={{ width: 80 }}
+              labelStyle={{ color: colors.white }}
+            >
+              Ok
+            </Button>
+          </View>
         </Dialog.Actions>
       </Dialog>
     );
@@ -639,7 +679,7 @@ function BankDepositScreen({ navigation, route }) {
         <Button
           mode="contained"
           style={{ width: 150, backgroundColor: colors.grey }}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate(routes.DASHBOARD)}
           labelStyle={{ color: colors.white }}
           disabled={collectionDepositApiSuccess}
         >

@@ -3,19 +3,28 @@
     "version": ">= 0.53.0"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
     "preview": {
-      "distribution": "internal",
       "android": {
         "buildType": "apk"
       }
     },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "soumen_middey@yahoo.com",
+        "ascAppId": "1630564074",
+        "appleTeamId": "W79W8T6Z73"
+      }
+    }
   }
 }

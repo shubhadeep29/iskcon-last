@@ -115,7 +115,7 @@ function OtpScreen({ navigation, route }) {
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
       if (data.status === 1) {
-        setOtpToShow(data.result.data.otp);
+        // setOtpToShow(data.result.data.otp);
         setTimer(30);
         start();
       } else {
@@ -126,7 +126,11 @@ function OtpScreen({ navigation, route }) {
   }, [data]);
 
   return (
-    <KeyboardAwareScrollView>
+    <ScrollView
+      keyboardDismissMode="on-drag"
+      keyboardShouldPersistTaps="handled"
+      contentInsetAdjustmentBehavior="always"
+    >
       <View
         style={{
           flex: 1,
@@ -152,7 +156,7 @@ function OtpScreen({ navigation, route }) {
               >
                 Enter your OTP
               </Text>
-              <Text>{otpToShow}</Text>
+              {/* <Text>{otpToShow}</Text> */}
             </View>
           </View>
           <View style={{ marginHorizontal: 50, marginTop: 80 }}>
@@ -226,7 +230,7 @@ function OtpScreen({ navigation, route }) {
           ></Image>
         </View>
       </View>
-    </KeyboardAwareScrollView>
+    </ScrollView>
   );
 }
 

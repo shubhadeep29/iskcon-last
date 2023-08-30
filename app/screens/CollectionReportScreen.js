@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -10,31 +10,32 @@ import {
   ActivityIndicator,
   ScrollView,
   useWindowDimensions,
-} from "react-native";
+} from 'react-native';
 
-import moment from "moment";
+import moment from 'moment';
 
-import allApi from "../api/allApi";
-import useApi from "../hooks/useApi";
+import allApi from '../api/allApi';
+import useApi from '../hooks/useApi';
 
-import colors from "../config/colors";
-import routes from "../navigation/routes";
-import Screen from "../components/Screen";
-import { Button, TextInput } from "react-native-paper";
-import { useFocusEffect } from "@react-navigation/native";
-import AuthContext from "../auth/context";
-import { DatePickerModal } from "react-native-paper-dates";
+import colors from '../config/colors';
+import routes from '../navigation/routes';
+import Screen from '../components/Screen';
+import { Button, TextInput } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
+import AuthContext from '../auth/context';
+import { DatePickerModal } from 'react-native-paper-dates';
+import OurSnackBar from '../components/OurSnackBar';
 
 function CollectionReportScreen({ navigation, route }) {
   const { user, setUser } = useContext(AuthContext);
   const screenDimensions = useWindowDimensions();
-  const dateFormat = "DD-MM-YYYY HH:MM";
-  const dateFormatToShow = "DD-MM-YYYY";
-  const dateFormatForSubmit = "YYYY-MM-DD";
+  const dateFormat = 'DD-MM-YYYY HH:MM';
+  const dateFormatToShow = 'DD-MM-YYYY';
+  const dateFormatForSubmit = 'YYYY-MM-DD';
 
-  const [collectionMode, setCollectionMode] = useState("cash");
-  const [apiErrorMsg, setApiErrorMsg] = useState("");
-  const [searchText, setSearchText] = useState("");
+  const [collectionMode, setCollectionMode] = useState('cash');
+  const [apiErrorMsg, setApiErrorMsg] = useState('');
+  const [searchText, setSearchText] = useState('');
 
   const today = new Date();
   const yesterday = new Date();
@@ -85,7 +86,6 @@ function CollectionReportScreen({ navigation, route }) {
   }, [collectedDonationReportApi.data]);
 
   const getCollectedDonations = (dateRange = range) => {
-    console.log("dates are", dateRange);
     let apiPayload = {
       user_id: user.user_id,
       payment_mode: collectionMode,
@@ -110,6 +110,40 @@ function CollectionReportScreen({ navigation, route }) {
     }, [collectionMode])
   );
 
+  const resendSmsAPi = useApi(allApi.sendFacsimileSms);
+  useEffect(() => {
+    if (resendSmsAPi.data && Object.keys(resendSmsAPi.data).length > 0) {
+      if (resendSmsAPi.data.status === 1) {
+        setUser((prevData) => {
+          return {
+            ...prevData,
+            showSnackBar: true,
+            snackBarMsg: 'SMS send successfully',
+          };
+        });
+
+        setTimeout(hideSnackBar, 2000);
+      } else {
+        setApiErrorMsg(resendSmsAPi.data.message);
+      }
+    }
+  }, [resendSmsAPi.data]);
+
+  const hideSnackBar = () => {
+    setUser((prevData) => {
+      return { ...prevData, showSnackBar: false, snackBarMsg: '' };
+    });
+  };
+  const resendSms = (item) => {
+    let apiPayload = {
+      user_id: user.user_id,
+      donor_id: item.donor_id,
+      transaction_id: item.transaction_id,
+    };
+    // console.log("apiPayload", apiPayload);
+    resendSmsAPi.request({ apiPayload, token: user.token });
+  };
+
   const cashList = (item, key) => {
     return (
       <View
@@ -124,8 +158,8 @@ function CollectionReportScreen({ navigation, route }) {
       >
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}
         >
           <Text
@@ -139,7 +173,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -148,8 +182,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -164,7 +198,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -173,8 +207,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -190,7 +224,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -199,8 +233,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -215,7 +249,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -224,8 +258,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -240,12 +274,51 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
             {item.donation_name}
           </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 4,
+          }}
+        >
+          <Text
+            style={{
+              color: colors.black,
+              fontSize: 12,
+            }}
+          >
+            Receipt #
+          </Text>
+          <Text
+            style={{
+              color: colors.black,
+              fontWeight: '700',
+              fontSize: 12,
+            }}
+          >
+            {item.receipt_no}
+          </Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Button
+            mode='contained'
+            compact
+            labelStyle={{ fontSize: 12, color: colors.white }}
+            style={{
+              backgroundColor: colors.secondary,
+              marginTop: 4,
+            }}
+            onPress={() => resendSms(item)}
+          >
+            Resend SMS
+          </Button>
         </View>
       </View>
     );
@@ -265,8 +338,8 @@ function CollectionReportScreen({ navigation, route }) {
       >
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}
         >
           <Text
@@ -282,7 +355,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -291,8 +364,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -300,7 +373,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -309,8 +382,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -318,7 +391,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -327,8 +400,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -336,7 +409,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -345,8 +418,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -356,12 +429,51 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
             {item.donation_name}
           </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 4,
+          }}
+        >
+          <Text
+            style={{
+              color: colors.black,
+              fontSize: 12,
+            }}
+          >
+            Receipt #
+          </Text>
+          <Text
+            style={{
+              color: colors.black,
+              fontWeight: '700',
+              fontSize: 12,
+            }}
+          >
+            {item.receipt_no}
+          </Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Button
+            mode='contained'
+            compact
+            labelStyle={{ fontSize: 12, color: colors.white }}
+            style={{
+              backgroundColor: colors.secondary,
+              marginTop: 4,
+            }}
+            onPress={() => resendSms(item)}
+          >
+            Resend SMS
+          </Button>
         </View>
       </View>
     );
@@ -381,8 +493,8 @@ function CollectionReportScreen({ navigation, route }) {
       >
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}
         >
           <Text style={{ color: colors.black, fontSize: 12 }}>
@@ -391,7 +503,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -400,8 +512,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -411,7 +523,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -420,8 +532,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -429,7 +541,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -438,8 +550,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -447,7 +559,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -456,8 +568,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -465,7 +577,7 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
@@ -474,8 +586,8 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             marginTop: 4,
           }}
         >
@@ -485,12 +597,51 @@ function CollectionReportScreen({ navigation, route }) {
           <Text
             style={{
               color: colors.black,
-              fontWeight: "700",
+              fontWeight: '700',
               fontSize: 12,
             }}
           >
             {item.donation_name}
           </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 4,
+          }}
+        >
+          <Text
+            style={{
+              color: colors.black,
+              fontSize: 12,
+            }}
+          >
+            Receipt #
+          </Text>
+          <Text
+            style={{
+              color: colors.black,
+              fontWeight: '700',
+              fontSize: 12,
+            }}
+          >
+            {item.receipt_no}
+          </Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Button
+            mode='contained'
+            compact
+            labelStyle={{ fontSize: 12, color: colors.white }}
+            style={{
+              backgroundColor: colors.secondary,
+              marginTop: 4,
+            }}
+            onPress={() => resendSms(item)}
+          >
+            Resend SMS
+          </Button>
         </View>
       </View>
     );
@@ -502,32 +653,32 @@ function CollectionReportScreen({ navigation, route }) {
         <View>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
+              flexDirection: 'row',
+              justifyContent: 'center',
             }}
           >
             <TouchableOpacity
               style={{
                 flex: 1,
                 borderRadius: 4,
-                alignItems: "center",
+                alignItems: 'center',
                 padding: 8,
                 borderWidth: 1,
                 borderColor: colors.primary,
                 backgroundColor:
-                  collectionMode === "cash" ? colors.primary : colors.white,
+                  collectionMode === 'cash' ? colors.primary : colors.white,
               }}
               onPress={() => {
-                setCollectionMode("cash");
-                setSearchText("");
+                setCollectionMode('cash');
+                setSearchText('');
               }}
             >
               <Text
                 style={{
                   fontSize: 12,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   color:
-                    collectionMode === "cash" ? colors.white : colors.black,
+                    collectionMode === 'cash' ? colors.white : colors.black,
                 }}
               >
                 CASH
@@ -538,25 +689,25 @@ function CollectionReportScreen({ navigation, route }) {
               style={{
                 flex: 1,
                 borderRadius: 4,
-                alignItems: "center",
+                alignItems: 'center',
                 padding: 8,
                 marginLeft: 8,
                 borderWidth: 1,
                 borderColor: colors.primary,
                 backgroundColor:
-                  collectionMode === "cheque" ? colors.primary : colors.white,
+                  collectionMode === 'cheque' ? colors.primary : colors.white,
               }}
               onPress={() => {
-                setCollectionMode("cheque");
-                setSearchText("");
+                setCollectionMode('cheque');
+                setSearchText('');
               }}
             >
               <Text
                 style={{
                   fontSize: 12,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   color:
-                    collectionMode === "cheque" ? colors.white : colors.black,
+                    collectionMode === 'cheque' ? colors.white : colors.black,
                 }}
               >
                 CHEQUE
@@ -566,24 +717,24 @@ function CollectionReportScreen({ navigation, route }) {
               style={{
                 flex: 1,
                 borderRadius: 4,
-                alignItems: "center",
+                alignItems: 'center',
                 padding: 8,
                 marginLeft: 8,
                 borderWidth: 1,
                 borderColor: colors.primary,
                 backgroundColor:
-                  collectionMode === "upi" ? colors.primary : colors.white,
+                  collectionMode === 'upi' ? colors.primary : colors.white,
               }}
               onPress={() => {
-                setCollectionMode("upi");
-                setSearchText("");
+                setCollectionMode('upi');
+                setSearchText('');
               }}
             >
               <Text
                 style={{
                   fontSize: 12,
-                  fontWeight: "bold",
-                  color: collectionMode === "upi" ? colors.white : colors.black,
+                  fontWeight: 'bold',
+                  color: collectionMode === 'upi' ? colors.white : colors.black,
                 }}
               >
                 UPI
@@ -593,7 +744,7 @@ function CollectionReportScreen({ navigation, route }) {
         </View>
 
         {/* FOR cash SECTION */}
-        {collectionMode === "cash" && (
+        {collectionMode === 'cash' && (
           <View
             style={{
               marginHorizontal: 0,
@@ -601,12 +752,12 @@ function CollectionReportScreen({ navigation, route }) {
           >
             <View>
               <TextInput
-                mode="flat"
+                mode='flat'
                 // label="Bank Branch Name"
-                placeholder="Search by Donor Name & Mobile"
+                placeholder='Search by Donor Name & Mobile'
                 right={
                   <TextInput.Icon
-                    name="magnify"
+                    name='magnify'
                     onPress={() => {
                       getCollectedDonations();
                     }}
@@ -624,10 +775,10 @@ function CollectionReportScreen({ navigation, route }) {
               />
               <View
                 style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                   marginTop: 10,
                 }}
               >
@@ -635,14 +786,14 @@ function CollectionReportScreen({ navigation, route }) {
                   <Text>You are seeing data between</Text>
                   <Text style={{ color: colors.secondary }}>
                     {moment(range.startDate).format(dateFormatToShow)}
-                    {"  -  "}
+                    {'  -  '}
                     {moment(range.endDate).format(dateFormatToShow)}
                   </Text>
                 </View>
                 <Button
                   onPress={() => setOpen(true)}
                   uppercase={false}
-                  mode="contained"
+                  mode='contained'
                   compact
                   style={{ backgroundColor: colors.secondary }}
                   labelStyle={{ color: colors.white }}
@@ -650,8 +801,8 @@ function CollectionReportScreen({ navigation, route }) {
                   Date range
                 </Button>
                 <DatePickerModal
-                  locale="en"
-                  mode="range"
+                  locale='en'
+                  mode='range'
                   visible={open}
                   onDismiss={onDismiss}
                   startDate={range.startDate}
@@ -665,7 +816,7 @@ function CollectionReportScreen({ navigation, route }) {
                   // onChange={} // same props as onConfirm but triggered without confirmed by user
                   // saveLabel="Save" // optional
                   // uppercase={false} // optional, default is true
-                  label="Select period" // optional
+                  label='Select period' // optional
                   // startLabel="From" // optional
                   // endLabel="To" // optional
                   // animationType="slide" // optional, default is slide on ios/android and none on web
@@ -679,7 +830,7 @@ function CollectionReportScreen({ navigation, route }) {
             </View>
             {collectedDonationReportApi.loading ? (
               <ActivityIndicator
-                size={"large"}
+                size={'large'}
                 color={colors.primary}
                 style={{ marginTop: 15 }}
               />
@@ -712,16 +863,16 @@ function CollectionReportScreen({ navigation, route }) {
           </View>
         )}
         {/* FOR cheque SECTION */}
-        {collectionMode === "cheque" && (
+        {collectionMode === 'cheque' && (
           <View style={{ marginHorizontal: 0 }}>
             <View>
               <TextInput
-                mode="flat"
+                mode='flat'
                 // label="Bank Branch Name"
-                placeholder="Search by Donor Name & Mobile"
+                placeholder='Search by Donor Name & Mobile'
                 right={
                   <TextInput.Icon
-                    name="magnify"
+                    name='magnify'
                     onPress={() => {
                       getCollectedDonations();
                     }}
@@ -740,10 +891,10 @@ function CollectionReportScreen({ navigation, route }) {
               />
               <View
                 style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                   marginTop: 10,
                 }}
               >
@@ -751,14 +902,14 @@ function CollectionReportScreen({ navigation, route }) {
                   <Text>You are seeing data between</Text>
                   <Text style={{ color: colors.secondary }}>
                     {moment(range.startDate).format(dateFormatToShow)}
-                    {"  -  "}
+                    {'  -  '}
                     {moment(range.endDate).format(dateFormatToShow)}
                   </Text>
                 </View>
                 <Button
                   onPress={() => setOpen(true)}
                   uppercase={false}
-                  mode="contained"
+                  mode='contained'
                   compact
                   style={{ backgroundColor: colors.secondary }}
                   labelStyle={{ color: colors.white }}
@@ -766,8 +917,8 @@ function CollectionReportScreen({ navigation, route }) {
                   Date range
                 </Button>
                 <DatePickerModal
-                  locale="en"
-                  mode="range"
+                  locale='en'
+                  mode='range'
                   visible={open}
                   onDismiss={onDismiss}
                   startDate={range.startDate}
@@ -781,7 +932,7 @@ function CollectionReportScreen({ navigation, route }) {
                   // onChange={} // same props as onConfirm but triggered without confirmed by user
                   // saveLabel="Save" // optional
                   // uppercase={false} // optional, default is true
-                  label="Select period" // optional
+                  label='Select period' // optional
                   // startLabel="From" // optional
                   // endLabel="To" // optional
                   // animationType="slide" // optional, default is slide on ios/android and none on web
@@ -795,7 +946,7 @@ function CollectionReportScreen({ navigation, route }) {
             </View>
             {collectedDonationReportApi.loading ? (
               <ActivityIndicator
-                size={"large"}
+                size={'large'}
                 color={colors.primary}
                 style={{ marginTop: 15 }}
               />
@@ -819,16 +970,16 @@ function CollectionReportScreen({ navigation, route }) {
         )}
 
         {/* FOR upi SECTION */}
-        {collectionMode === "upi" && (
+        {collectionMode === 'upi' && (
           <View style={{ marginHorizontal: 0 }}>
             <View>
               <TextInput
-                mode="flat"
+                mode='flat'
                 // label="Bank Branch Name"
-                placeholder="Search by Donor name, phone, Reference Number"
+                placeholder='Search by Donor name, phone, Reference Number'
                 right={
                   <TextInput.Icon
-                    name="magnify"
+                    name='magnify'
                     onPress={() => {
                       getCollectedDonations();
                     }}
@@ -847,10 +998,10 @@ function CollectionReportScreen({ navigation, route }) {
               />
               <View
                 style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                   marginTop: 10,
                 }}
               >
@@ -858,14 +1009,14 @@ function CollectionReportScreen({ navigation, route }) {
                   <Text>You are seeing data between</Text>
                   <Text style={{ color: colors.secondary }}>
                     {moment(range.startDate).format(dateFormatToShow)}
-                    {"  -  "}
+                    {'  -  '}
                     {moment(range.endDate).format(dateFormatToShow)}
                   </Text>
                 </View>
                 <Button
                   onPress={() => setOpen(true)}
                   uppercase={false}
-                  mode="contained"
+                  mode='contained'
                   compact
                   style={{ backgroundColor: colors.secondary }}
                   labelStyle={{ color: colors.white }}
@@ -873,8 +1024,8 @@ function CollectionReportScreen({ navigation, route }) {
                   Date range
                 </Button>
                 <DatePickerModal
-                  locale="en"
-                  mode="range"
+                  locale='en'
+                  mode='range'
                   visible={open}
                   onDismiss={onDismiss}
                   startDate={range.startDate}
@@ -888,7 +1039,7 @@ function CollectionReportScreen({ navigation, route }) {
                   // onChange={} // same props as onConfirm but triggered without confirmed by user
                   // saveLabel="Save" // optional
                   // uppercase={false} // optional, default is true
-                  label="Select period" // optional
+                  label='Select period' // optional
                   // startLabel="From" // optional
                   // endLabel="To" // optional
                   // animationType="slide" // optional, default is slide on ios/android and none on web
@@ -902,7 +1053,7 @@ function CollectionReportScreen({ navigation, route }) {
             </View>
             {collectedDonationReportApi.loading ? (
               <ActivityIndicator
-                size={"large"}
+                size={'large'}
                 color={colors.primary}
                 style={{ marginTop: 15 }}
               />
@@ -927,8 +1078,9 @@ function CollectionReportScreen({ navigation, route }) {
       </View>
 
       <View style={{}}>
+        <OurSnackBar />
         <Button
-          mode="contained"
+          mode='contained'
           style={{ backgroundColor: colors.secondary }}
           onPress={() => navigation.navigate(routes.REPORT)}
           labelStyle={{ color: colors.white }}
@@ -947,6 +1099,6 @@ const styles = StyleSheet.create({
     padding: 20,
     // borderWidth: 1,
     // borderColor: colors.black,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
 });

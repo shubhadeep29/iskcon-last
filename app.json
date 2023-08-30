@@ -1,9 +1,12 @@
 {
   "expo": {
-    "name": "Iskcon Collectors",
-    "slug": "IskconCollectors",
-    "platforms": ["ios", "android"],
-    "version": "1.0.0",
+    "name": "Collect4Mayapur",
+    "slug": "Collect4Mayapur",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./app/assets/logo.png",
     "splash": {
@@ -14,14 +17,22 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.iskoncollectors.iskcon"
+      "bundleIdentifier": "collect4mayapur.iskcon.com",
+      "buildNumber": "5"
     },
+    "description": "Collect4Mayapur App",
     "android": {
-      "package": "com.iskoncollectors.iskcon"
+      "package": "collect4mayapur.iskcon.com"
     },
-    "description": "Iskcon Collectors App"
+    "extra": {
+      "eas": {
+        "projectId": "7757900a-5e65-4344-9e77-e8776dbb8048"
+      }
+    }
   }
 }

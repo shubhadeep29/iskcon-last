@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -8,25 +8,27 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-} from "react-native";
+  Alert,
+} from 'react-native';
 
-import moment from "moment";
+import moment from 'moment';
 
-import colors from "../config/colors";
-import routes from "../navigation/routes";
-import Screen from "../components/Screen";
-import { Button, Dialog, RadioButton, TextInput } from "react-native-paper";
-import { DatePickerInput, DatePickerModal } from "react-native-paper-dates";
+import colors from '../config/colors';
+import routes from '../navigation/routes';
+import Screen from '../components/Screen';
+import { Button, Dialog, RadioButton, TextInput } from 'react-native-paper';
+import { DatePickerInput, DatePickerModal } from 'react-native-paper-dates';
 
-import allApi from "../api/allApi";
-import useApi from "../hooks/useApi";
-import AuthContext from "../auth/context";
-import { StackActions, useFocusEffect } from "@react-navigation/native";
+import allApi from '../api/allApi';
+import useApi from '../hooks/useApi';
+import AuthContext from '../auth/context';
+import { StackActions, useFocusEffect } from '@react-navigation/native';
 
 function CollectionModeScreen({ navigation, route }) {
   const { user, setUser } = useContext(AuthContext);
   const [apiSuccess, setApiSuccess] = useState(false);
-  const [apiErrorMsg, setApiErrorMsg] = useState("");
+  const [receiptNo, setReceiptNo] = useState('');
+  const [apiErrorMsg, setApiErrorMsg] = useState('');
   const navStateIndex = navigation?.getState()?.index;
 
   const donorData = route.params;
@@ -40,7 +42,7 @@ function CollectionModeScreen({ navigation, route }) {
   const [cashCollection, setCashCollection] = useState({});
   const [chequeCollection, setChequeCollection] = useState({});
   const [collectionLimit, setCollectionLimit] = useState({});
-  const [qrCodeLink, setQrCodeLink] = useState("");
+  const [qrCodeLink, setQrCodeLink] = useState('');
 
   const collectorDashboardApi = useApi(allApi.collectorDashboard);
 
@@ -96,11 +98,11 @@ function CollectionModeScreen({ navigation, route }) {
         ) {
           let cashCollectionData =
             collectorDashboardApi.data.result.data.collectiondetails.find(
-              (item) => item.payment_mode === "CASH"
+              (item) => item.payment_mode === 'CASH'
             );
           let chequeCollectionData =
             collectorDashboardApi.data.result.data.collectiondetails.find(
-              (item) => item.payment_mode === "CHEQUE"
+              (item) => item.payment_mode === 'CHEQUE'
             );
           cashCollectionData
             ? setCashCollection(cashCollectionData)
@@ -142,35 +144,35 @@ function CollectionModeScreen({ navigation, route }) {
     }, [])
   );
 
-  const dateFormat = "DD-MM-YYYY";
-  const dateFormatForSubmit = "YYYY-MM-DD";
+  const dateFormat = 'DD-MM-YYYY';
+  const dateFormatForSubmit = 'YYYY-MM-DD';
   const panReg = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
 
-  const [collectionMode, setCollectionMode] = useState("cash");
+  const [collectionMode, setCollectionMode] = useState('cash');
 
   const { data, error, loading, request } = useApi(allApi.donarPayment);
 
-  const [cheque_no, setcheque_no] = useState("");
+  const [cheque_no, setcheque_no] = useState('');
   const [cheque_noError, setcheque_noError] = useState(false);
 
   const [cheque_date, setcheque_date] = useState(new Date());
   const [cheque_dateError, setcheque_dateError] = useState(false);
 
-  const [bank_name, setbank_name] = useState("");
+  const [bank_name, setbank_name] = useState('');
   const [bank_nameError, setbank_nameError] = useState(false);
 
-  const [bank_branch, setbank_branch] = useState("");
+  const [bank_branch, setbank_branch] = useState('');
   const [bank_branchError, setbank_branchError] = useState(false);
 
-  const [payment_reference_no, setpayment_reference_no] = useState("");
+  const [payment_reference_no, setpayment_reference_no] = useState('');
   const [payment_reference_noError, setpayment_reference_noError] =
     useState(false);
 
-  const [certificate_require, setcertificate_require] = useState("no");
+  const [certificate_require, setcertificate_require] = useState('no');
   const [certificate_requireError, setcertificate_requireError] =
     useState(false);
 
-  const [donor_panno, setdonor_panno] = useState("");
+  const [donor_panno, setdonor_panno] = useState('');
   const [donor_pannoError, setdonor_pannoError] = useState(false);
   const [donor_pannoFormatError, setdonor_pannoFormatError] = useState(false);
 
@@ -178,6 +180,12 @@ function CollectionModeScreen({ navigation, route }) {
     if (data && Object.keys(data).length > 0) {
       if (data.status === 1) {
         setApiSuccess(true);
+        console.log(Object.keys(data.result.data).length);
+        if (Object.keys(data.result.data).length > 0) {
+          setReceiptNo(data.result.data.receipt_no);
+        } else {
+          setReceiptNo('');
+        }
       } else {
         setApiErrorMsg(data.message);
       }
@@ -185,34 +193,36 @@ function CollectionModeScreen({ navigation, route }) {
   }, [data]);
 
   const MyAlert = () => {
+    console.log('receiptNo', receiptNo);
     return (
       <Dialog style={{ borderRadius: 10 }} visible={apiSuccess}>
         <Dialog.Content
           style={{
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
           <Image
-            source={require("../assets/check.png")}
+            source={require('../assets/check.png')}
             style={{
               width: 80,
               height: 80,
-              resizeMode: "contain",
+              resizeMode: 'contain',
             }}
           ></Image>
           <Text style={{ marginTop: 10 }}>That's awesome </Text>
           <Text>Donation successful</Text>
+          <Text>Receipt # {receiptNo}</Text>
         </Dialog.Content>
         <Dialog.Actions
           style={{
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems: 'center',
+            justifyContent: 'center',
             marginBottom: 20,
           }}
         >
           <Button
-            mode="contained"
+            mode='contained'
             onPress={() => {
               navStateIndex === 5
                 ? navigation.dispatch(StackActions.popToTop())
@@ -245,7 +255,7 @@ function CollectionModeScreen({ navigation, route }) {
   const chequeSubmit = () => {
     if (checkChequeLimit()) return false;
 
-    if (cheque_no.trim() === "" || cheque_no.length !== 6) {
+    if (cheque_no.trim() === '' || cheque_no.length !== 6) {
       setcheque_noError(true);
       return false;
     }
@@ -256,17 +266,17 @@ function CollectionModeScreen({ navigation, route }) {
       return false;
     }
 
-    if (bank_name.trim() === "") {
+    if (bank_name.trim() === '') {
       setbank_nameError(true);
       return false;
     }
 
-    if (bank_branch.trim() === "") {
+    if (bank_branch.trim() === '') {
       setbank_branchError(true);
       return false;
     }
 
-    if (certificate_require === "yes" && donor_panno.trim() === "") {
+    if (certificate_require === 'yes' && donor_panno.trim() === '') {
       setdonor_pannoError(true);
       return false;
     }
@@ -282,8 +292,8 @@ function CollectionModeScreen({ navigation, route }) {
 
     dataToSubmit.certificate_require = certificate_require;
     dataToSubmit.donor_panno = donor_panno;
-    if (donor_panno.trim() === "") {
-      dataToSubmit.donor_panno = "NA";
+    if (donor_panno.trim() === '') {
+      dataToSubmit.donor_panno = 'NA';
     }
 
     let apiPayload = {
@@ -299,12 +309,12 @@ function CollectionModeScreen({ navigation, route }) {
   };
 
   const upiSubmit = () => {
-    if (payment_reference_no.trim() === "") {
+    if (payment_reference_no.trim() === '') {
       setpayment_reference_noError(true);
       return false;
     }
 
-    if (certificate_require === "yes" && donor_panno.trim() === "") {
+    if (certificate_require === 'yes' && donor_panno.trim() === '') {
       setdonor_pannoError(true);
       return false;
     }
@@ -320,8 +330,8 @@ function CollectionModeScreen({ navigation, route }) {
 
     dataToSubmit.certificate_require = certificate_require;
     dataToSubmit.donor_panno = donor_panno;
-    if (donor_panno.trim() === "") {
-      dataToSubmit.donor_panno = "NA";
+    if (donor_panno.trim() === '') {
+      dataToSubmit.donor_panno = 'NA';
     }
 
     let apiPayload = {
@@ -333,18 +343,32 @@ function CollectionModeScreen({ navigation, route }) {
     request({ apiPayload, token: user.token });
   };
 
-  const handleSubmit = () => {
-    setApiErrorMsg("");
+  const createTwoButtonAlert = () =>
+    Alert.alert(
+      'Collect4Mayapur',
+      `Details once submitted here can not be modified. Do you want to verify before submit?`,
+      [
+        {
+          text: 'Verify Again',
+          onPress: () => console.log('Verify Pressed'),
+          style: 'cancel',
+        },
+        { text: 'Submit', onPress: () => handleSubmit() },
+      ]
+    );
 
-    if (collectionMode === "cash") {
+  const handleSubmit = () => {
+    setApiErrorMsg('');
+
+    if (collectionMode === 'cash') {
       cashSubmit();
     }
 
-    if (collectionMode === "cheque") {
+    if (collectionMode === 'cheque') {
       chequeSubmit();
     }
 
-    if (collectionMode === "upi") {
+    if (collectionMode === 'upi') {
       upiSubmit();
     }
     // navigation.navigate(routes.SELECT_DONATION, donorData);
@@ -354,36 +378,36 @@ function CollectionModeScreen({ navigation, route }) {
     <Screen style={styles.screen}>
       <ScrollView
         style={{ padding: 10 }}
-        keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps="handled"
-        contentInsetAdjustmentBehavior="always"
+        keyboardDismissMode='on-drag'
+        keyboardShouldPersistTaps='handled'
+        contentInsetAdjustmentBehavior='always'
       >
         <View>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
+              flexDirection: 'row',
+              justifyContent: 'center',
             }}
           >
             <TouchableOpacity
               style={{
                 flex: 1,
                 borderRadius: 4,
-                alignItems: "center",
+                alignItems: 'center',
                 padding: 8,
                 borderWidth: 1,
                 borderColor: colors.primary,
                 backgroundColor:
-                  collectionMode === "cash" ? colors.primary : colors.white,
+                  collectionMode === 'cash' ? colors.primary : colors.white,
               }}
-              onPress={() => setCollectionMode("cash")}
+              onPress={() => setCollectionMode('cash')}
             >
               <Text
                 style={{
                   fontSize: 12,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   color:
-                    collectionMode === "cash" ? colors.white : colors.black,
+                    collectionMode === 'cash' ? colors.white : colors.black,
                 }}
               >
                 CASH
@@ -394,22 +418,22 @@ function CollectionModeScreen({ navigation, route }) {
               style={{
                 flex: 1,
                 borderRadius: 4,
-                alignItems: "center",
+                alignItems: 'center',
                 padding: 8,
                 marginLeft: 8,
                 borderWidth: 1,
                 borderColor: colors.primary,
                 backgroundColor:
-                  collectionMode === "cheque" ? colors.primary : colors.white,
+                  collectionMode === 'cheque' ? colors.primary : colors.white,
               }}
-              onPress={() => setCollectionMode("cheque")}
+              onPress={() => setCollectionMode('cheque')}
             >
               <Text
                 style={{
                   fontSize: 12,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   color:
-                    collectionMode === "cheque" ? colors.white : colors.black,
+                    collectionMode === 'cheque' ? colors.white : colors.black,
                 }}
               >
                 CHEQUE
@@ -419,21 +443,21 @@ function CollectionModeScreen({ navigation, route }) {
               style={{
                 flex: 1,
                 borderRadius: 4,
-                alignItems: "center",
+                alignItems: 'center',
                 padding: 8,
                 marginLeft: 8,
                 borderWidth: 1,
                 borderColor: colors.primary,
                 backgroundColor:
-                  collectionMode === "upi" ? colors.primary : colors.white,
+                  collectionMode === 'upi' ? colors.primary : colors.white,
               }}
-              onPress={() => setCollectionMode("upi")}
+              onPress={() => setCollectionMode('upi')}
             >
               <Text
                 style={{
                   fontSize: 12,
-                  fontWeight: "bold",
-                  color: collectionMode === "upi" ? colors.white : colors.black,
+                  fontWeight: 'bold',
+                  color: collectionMode === 'upi' ? colors.white : colors.black,
                 }}
               >
                 UPI
@@ -446,30 +470,30 @@ function CollectionModeScreen({ navigation, route }) {
           style={{
             marginTop: 10,
             paddingHorizontal: 10,
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}
         >
           <Text style={{ color: colors.secondary }}>
             {donorData.selectedDonationType.donation_name}
           </Text>
-          <Text style={{ color: colors.secondary, fontWeight: "bold" }}>
+          <Text style={{ color: colors.secondary, fontWeight: 'bold' }}>
             INR {Number(donorData.donation_amount).toFixed(2)}
           </Text>
         </View>
 
         {/* FOR cash SECTION */}
-        {collectionMode === "cash" && (
+        {collectionMode === 'cash' && (
           <>
             <View
               style={{
                 marginTop: 10,
                 padding: 10,
                 height: 40,
-                alignItems: "center",
+                alignItems: 'center',
                 backgroundColor: colors.greyShade,
-                flexDirection: "row",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
               }}
             >
               <Text style={{ color: colors.black }}>Cash Holding Amount</Text>
@@ -479,18 +503,18 @@ function CollectionModeScreen({ navigation, route }) {
                   style={{ marginRight: 20 }}
                 />
               ) : (
-                <Text style={{ color: colors.black, fontWeight: "bold" }}>
-                  INR{" "}
+                <Text style={{ color: colors.black, fontWeight: 'bold' }}>
+                  INR{' '}
                   {cashCollection && Object.keys(cashCollection).length > 0
                     ? cashCollection.collectionamount
-                    : "00.00"}
+                    : '00.00'}
                 </Text>
               )}
             </View>
             {cashLimitReach && (
               <Text style={{ marginLeft: 10, color: colors.danger }}>
                 You can not add this donation by cash. because your cash
-                collection limit is{" "}
+                collection limit is{' '}
                 {collectionLimit && Object.keys(collectionLimit).length > 0
                   ? collectionLimit.cashlimt
                   : 0}
@@ -500,33 +524,33 @@ function CollectionModeScreen({ navigation, route }) {
         )}
 
         {/* FOR cheque SECTION */}
-        {collectionMode === "cheque" && (
+        {collectionMode === 'cheque' && (
           <>
             <View
               style={{
                 marginTop: 10,
                 padding: 10,
                 height: 40,
-                alignItems: "center",
+                alignItems: 'center',
                 backgroundColor: colors.greyShade,
-                flexDirection: "row",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
               }}
             >
               <Text style={{ color: colors.black }}>Cheque Holding Amount</Text>
-              <Text style={{ color: colors.black, fontWeight: "bold" }}>
+              <Text style={{ color: colors.black, fontWeight: 'bold' }}>
                 {collectorDashboardApi.loading ? (
                   <ActivityIndicator
                     color={colors.primary}
                     style={{ marginRight: 20 }}
                   />
                 ) : (
-                  <Text style={{ color: colors.black, fontWeight: "bold" }}>
-                    INR{" "}
+                  <Text style={{ color: colors.black, fontWeight: 'bold' }}>
+                    INR{' '}
                     {chequeCollection &&
                     Object.keys(chequeCollection).length > 0
                       ? chequeCollection.collectionamount
-                      : "00.00"}
+                      : '00.00'}
                   </Text>
                 )}
               </Text>
@@ -534,7 +558,7 @@ function CollectionModeScreen({ navigation, route }) {
             {chequeLimitReach && (
               <Text style={{ marginLeft: 10, color: colors.danger }}>
                 You can not add this donation by cheque. because your cheque
-                collection limit is{" "}
+                collection limit is{' '}
                 {collectionLimit && Object.keys(collectionLimit).length > 0
                   ? collectionLimit.chequelimit
                   : 0}
@@ -542,9 +566,9 @@ function CollectionModeScreen({ navigation, route }) {
             )}
             <View>
               <TextInput
-                mode="flat"
-                label="Cheque No. *"
-                placeholder="Enter Cheque number"
+                mode='flat'
+                label='Cheque No. *'
+                placeholder='Enter Cheque number'
                 // left={
                 //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
                 // }
@@ -556,7 +580,7 @@ function CollectionModeScreen({ navigation, route }) {
                   setcheque_noError(false);
                 }}
                 maxLength={6}
-                keyboardType="numeric"
+                keyboardType='numeric'
                 style={{ backgroundColor: colors.white }}
               />
               {cheque_noError && (
@@ -566,12 +590,12 @@ function CollectionModeScreen({ navigation, route }) {
               )}
 
               <DatePickerInput
-                mode="flat"
-                locale="en-GB"
-                label="Cheque Date *"
+                mode='flat'
+                locale='en-GB'
+                label='Cheque Date *'
                 value={cheque_date}
                 onChange={(d) => setcheque_date(d)}
-                inputMode="start"
+                inputMode='start'
                 activeUnderlineColor={colors.primary}
                 underlineColor={colors.grey}
                 style={{ backgroundColor: colors.white }}
@@ -601,9 +625,9 @@ function CollectionModeScreen({ navigation, route }) {
               )}
 
               <TextInput
-                mode="flat"
-                label="Bank Name *"
-                placeholder="Enter Bank Name"
+                mode='flat'
+                label='Bank Name *'
+                placeholder='Enter Bank Name'
                 activeUnderlineColor={colors.primary}
                 underlineColor={colors.grey}
                 value={bank_name}
@@ -620,9 +644,9 @@ function CollectionModeScreen({ navigation, route }) {
                 </Text>
               )}
               <TextInput
-                mode="flat"
-                label="Branch Name *"
-                placeholder="Enter Branch number"
+                mode='flat'
+                label='Branch Name *'
+                placeholder='Enter Branch number'
                 activeUnderlineColor={colors.primary}
                 underlineColor={colors.grey}
                 value={bank_branch}
@@ -646,8 +670,8 @@ function CollectionModeScreen({ navigation, route }) {
                       paddingHorizontal: 10,
                       marginTop: 15,
                       paddingBottom: 10,
-                      flexDirection: "row",
-                      alignItems: "center",
+                      flexDirection: 'row',
+                      alignItems: 'center',
                       borderBottomWidth: 1,
                       borderColor: colors.grey,
                     }}
@@ -655,14 +679,14 @@ function CollectionModeScreen({ navigation, route }) {
                     <Text style={{ fontSize: 16 }}>80G Required </Text>
                     <View
                       style={{
-                        flexDirection: "row",
-                        alignItems: "center",
+                        flexDirection: 'row',
+                        alignItems: 'center',
                         marginLeft: 10,
                       }}
                     >
                       <TouchableOpacity
                         onPress={() => {
-                          setcertificate_require("yes");
+                          setcertificate_require('yes');
                           setdonor_pannoError(false);
                           setdonor_pannoFormatError(false);
                         }}
@@ -671,14 +695,14 @@ function CollectionModeScreen({ navigation, route }) {
                       </TouchableOpacity>
                       <RadioButton
                         color={colors.primary}
-                        value="yes"
+                        value='yes'
                         status={
-                          certificate_require === "yes"
-                            ? "checked"
-                            : "unchecked"
+                          certificate_require === 'yes'
+                            ? 'checked'
+                            : 'unchecked'
                         }
                         onPress={() => {
-                          setcertificate_require("yes");
+                          setcertificate_require('yes');
                           setdonor_pannoError(false);
                           setdonor_pannoFormatError(false);
                         }}
@@ -688,14 +712,14 @@ function CollectionModeScreen({ navigation, route }) {
 
                     <View
                       style={{
-                        flexDirection: "row",
-                        alignItems: "center",
+                        flexDirection: 'row',
+                        alignItems: 'center',
                         marginLeft: 10,
                       }}
                     >
                       <TouchableOpacity
                         onPress={() => {
-                          setcertificate_require("no");
+                          setcertificate_require('no');
                           setdonor_pannoError(false);
                           setdonor_pannoFormatError(false);
                         }}
@@ -704,12 +728,12 @@ function CollectionModeScreen({ navigation, route }) {
                       </TouchableOpacity>
                       <RadioButton
                         color={colors.primary}
-                        value="no"
+                        value='no'
                         status={
-                          certificate_require === "no" ? "checked" : "unchecked"
+                          certificate_require === 'no' ? 'checked' : 'unchecked'
                         }
                         onPress={() => {
-                          setcertificate_require("no");
+                          setcertificate_require('no');
                           setdonor_pannoError(false);
                           setdonor_pannoFormatError(false);
                         }}
@@ -717,9 +741,9 @@ function CollectionModeScreen({ navigation, route }) {
                     </View>
                   </View>
                   <TextInput
-                    donor_type="flat"
-                    label="PAN"
-                    placeholder="Enter PAN"
+                    donor_type='flat'
+                    label='PAN'
+                    placeholder='Enter PAN'
                     // left={
                     //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
                     // }
@@ -732,7 +756,7 @@ function CollectionModeScreen({ navigation, route }) {
                       setdonor_pannoError(false);
                       setdonor_pannoFormatError(false);
                     }}
-                    autoCapitalize="characters"
+                    autoCapitalize='characters'
                     // keyboardType="numeric"
                     style={{ backgroundColor: colors.white, marginBottom: 15 }}
                   />
@@ -767,12 +791,12 @@ function CollectionModeScreen({ navigation, route }) {
         )}
 
         {/* FOR upi SECTION */}
-        {collectionMode === "upi" && (
+        {collectionMode === 'upi' && (
           <View>
             <TextInput
-              mode="flat"
-              label="Reference No. *"
-              placeholder="Enter Reference number"
+              mode='flat'
+              label='Reference No. *'
+              placeholder='Enter Reference number'
               // left={
               //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
               // }
@@ -804,8 +828,8 @@ function CollectionModeScreen({ navigation, route }) {
                     paddingHorizontal: 10,
                     marginTop: 15,
                     paddingBottom: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
+                    flexDirection: 'row',
+                    alignItems: 'center',
                     borderBottomWidth: 1,
                     borderColor: colors.grey,
                   }}
@@ -813,14 +837,14 @@ function CollectionModeScreen({ navigation, route }) {
                   <Text style={{ fontSize: 16 }}>80G Required </Text>
                   <View
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
+                      flexDirection: 'row',
+                      alignItems: 'center',
                       marginLeft: 10,
                     }}
                   >
                     <TouchableOpacity
                       onPress={() => {
-                        setcertificate_require("yes");
+                        setcertificate_require('yes');
                         setdonor_pannoError(false);
                         setdonor_pannoFormatError(false);
                       }}
@@ -829,12 +853,12 @@ function CollectionModeScreen({ navigation, route }) {
                     </TouchableOpacity>
                     <RadioButton
                       color={colors.primary}
-                      value="yes"
+                      value='yes'
                       status={
-                        certificate_require === "yes" ? "checked" : "unchecked"
+                        certificate_require === 'yes' ? 'checked' : 'unchecked'
                       }
                       onPress={() => {
-                        setcertificate_require("yes");
+                        setcertificate_require('yes');
                         setdonor_pannoError(false);
                         setdonor_pannoFormatError(false);
                       }}
@@ -844,14 +868,14 @@ function CollectionModeScreen({ navigation, route }) {
 
                   <View
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
+                      flexDirection: 'row',
+                      alignItems: 'center',
                       marginLeft: 10,
                     }}
                   >
                     <TouchableOpacity
                       onPress={() => {
-                        setcertificate_require("no");
+                        setcertificate_require('no');
                         setdonor_pannoError(false);
                         setdonor_pannoFormatError(false);
                       }}
@@ -860,12 +884,12 @@ function CollectionModeScreen({ navigation, route }) {
                     </TouchableOpacity>
                     <RadioButton
                       color={colors.primary}
-                      value="no"
+                      value='no'
                       status={
-                        certificate_require === "no" ? "checked" : "unchecked"
+                        certificate_require === 'no' ? 'checked' : 'unchecked'
                       }
                       onPress={() => {
-                        setcertificate_require("no");
+                        setcertificate_require('no');
                         setdonor_pannoError(false);
                         setdonor_pannoFormatError(false);
                       }}
@@ -873,9 +897,9 @@ function CollectionModeScreen({ navigation, route }) {
                   </View>
                 </View>
                 <TextInput
-                  donor_type="flat"
-                  label="PAN"
-                  placeholder="Enter PAN"
+                  donor_type='flat'
+                  label='PAN'
+                  placeholder='Enter PAN'
                   // left={
                   //   <TextInput.Affix text="+91  " style={{ marginRight: 10 }} />
                   // }
@@ -888,7 +912,7 @@ function CollectionModeScreen({ navigation, route }) {
                     setdonor_pannoError(false);
                     setdonor_pannoFormatError(false);
                   }}
-                  autoCapitalize="characters"
+                  autoCapitalize='characters'
                   // keyboardType="numeric"
                   style={{ backgroundColor: colors.white, marginBottom: 15 }}
                 />
@@ -918,10 +942,10 @@ function CollectionModeScreen({ navigation, route }) {
               </>
             ) : null}
 
-            <View style={{ alignItems: "center" }}>
+            <View style={{ alignItems: 'center' }}>
               {collectorDashboardApi.loading ? (
                 <ActivityIndicator
-                  size={"large"}
+                  size={'large'}
                   color={colors.primary}
                   style={{ marginTop: 20 }}
                 />
@@ -933,7 +957,7 @@ function CollectionModeScreen({ navigation, route }) {
                   style={{
                     width: 300,
                     height: 300,
-                    resizeMode: "contain",
+                    resizeMode: 'contain',
                     backgroundColor: colors.white,
                     borderColor: colors.primary,
                     borderWidth: 2,
@@ -949,7 +973,7 @@ function CollectionModeScreen({ navigation, route }) {
       <MyAlert />
       {apiErrorMsg ? (
         <Text
-          style={{ textAlign: "center", color: colors.danger, marginTop: 10 }}
+          style={{ textAlign: 'center', color: colors.danger, marginTop: 10 }}
         >
           {apiErrorMsg}
         </Text>
@@ -957,12 +981,12 @@ function CollectionModeScreen({ navigation, route }) {
       <View
         style={{
           marginTop: 15,
-          flexDirection: "row",
-          justifyContent: "space-around",
+          flexDirection: 'row',
+          justifyContent: 'space-around',
         }}
       >
         <Button
-          mode="contained"
+          mode='contained'
           style={{ width: 150, backgroundColor: colors.grey }}
           labelStyle={{ color: colors.white }}
           onPress={() => navigation.goBack()}
@@ -971,13 +995,13 @@ function CollectionModeScreen({ navigation, route }) {
           Back
         </Button>
         <Button
-          mode="contained"
+          mode='contained'
           style={{
             width: 150,
             backgroundColor: colors.secondary,
           }}
           labelStyle={{ color: colors.white }}
-          onPress={() => handleSubmit()}
+          onPress={() => createTwoButtonAlert()}
           loading={loading}
           disabled={apiSuccess}
         >
@@ -992,7 +1016,7 @@ const styles = StyleSheet.create({
   screen: {
     padding: 10,
     paddingBottom: 20,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
 });
 

@@ -25,6 +25,7 @@ import { Button, TextInput } from "react-native-paper";
 import AuthContext from "../auth/context";
 import { useFocusEffect } from "@react-navigation/native";
 import { DatePickerModal } from "react-native-paper-dates";
+import { generateCashPdf, generateChequePdf } from "../lib";
 
 function BankDepositReportScreen({ navigation, route }) {
   const { user, setUser } = useContext(AuthContext);
@@ -85,7 +86,6 @@ function BankDepositReportScreen({ navigation, route }) {
   }, [bankDepositReportApi.data]);
 
   const getCollectedDonations = (dateRange = range) => {
-    console.log("dates are", dateRange);
     let apiPayload = {
       user_id: user.user_id,
       payment_mode: collectionMode,
@@ -109,6 +109,49 @@ function BankDepositReportScreen({ navigation, route }) {
       });
     }, [collectionMode])
   );
+
+  const bankDepositReportDetailsApi = useApi(allApi.bankDepositDetailsReport);
+  const [
+    bankDepositReportDetailsApiSuccess,
+    setBankDepositReportDetailsApiSuccess,
+  ] = useState(false);
+  const [depositData, setDepositData] = useState({});
+
+  useEffect(() => {
+    if (
+      bankDepositReportDetailsApi.data &&
+      Object.keys(bankDepositReportDetailsApi.data).length > 0
+    ) {
+      if (bankDepositReportDetailsApi.data.status === 1) {
+        setBankDepositReportDetailsApiSuccess(true);
+        setDepositData("");
+        if (
+          bankDepositReportDetailsApi.data.result.data.length > 0 &&
+          depositData && // 👈 null and undefined check
+          Object.keys(depositData).length > 0
+        ) {
+          generateChequePdf({
+            depositData,
+            depositDetails: bankDepositReportDetailsApi.data.result.data,
+          });
+        } else {
+          setApiErrorMsg("something went wrong! please try again");
+        }
+      } else {
+        setDepositData("");
+        setApiErrorMsg(bankDepositReportDetailsApi.data.message);
+      }
+    }
+  }, [bankDepositReportDetailsApi.data]);
+
+  const getCollectedDonationDetails = (data) => {
+    setDepositData(data);
+    let apiPayload = {
+      user_id: user.user_id,
+      deposit_id: data.deposit_id,
+    };
+    bankDepositReportDetailsApi.request({ apiPayload, token: user.token });
+  };
 
   const cashList = (item, key) => {
     return (
@@ -235,19 +278,39 @@ function BankDepositReportScreen({ navigation, route }) {
             {item.branch_name}
           </Text>
         </View>
-        <Button
-          mode="contained"
-          compact
-          labelStyle={{ fontSize: 12, color: colors.white }}
-          style={{
-            backgroundColor: colors.secondary,
-            alignSelf: "flex-end",
-            marginTop: 4,
-          }}
-          onPress={() => navigation.navigate(routes.CASH_DEPOSIT_DETAILS, item)}
-        >
-          View Details
-        </Button>
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          <Button
+            mode="contained"
+            compact
+            labelStyle={{ fontSize: 12, color: colors.white }}
+            style={{
+              backgroundColor: colors.primary,
+              marginTop: 4,
+              marginRight: 5,
+            }}
+            loading={
+              bankDepositReportDetailsApi.loading &&
+              depositData === item.deposit_id
+            }
+            onPress={() => generateCashPdf(item)}
+          >
+            Download
+          </Button>
+          <Button
+            mode="contained"
+            compact
+            labelStyle={{ fontSize: 12, color: colors.white }}
+            style={{
+              backgroundColor: colors.secondary,
+              marginTop: 4,
+            }}
+            onPress={() =>
+              navigation.navigate(routes.CASH_DEPOSIT_DETAILS, item)
+            }
+          >
+            View Details
+          </Button>
+        </View>
       </View>
     );
   };
@@ -377,21 +440,40 @@ function BankDepositReportScreen({ navigation, route }) {
             {item.branch_name}
           </Text>
         </View>
-        <Button
-          mode="contained"
-          compact
-          labelStyle={{ fontSize: 12, color: colors.white }}
-          style={{
-            backgroundColor: colors.secondary,
-            alignSelf: "flex-end",
-            marginTop: 4,
-          }}
-          onPress={() =>
-            navigation.navigate(routes.CHEQUE_DEPOSIT_DETAILS, item)
-          }
-        >
-          View Details
-        </Button>
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          <Button
+            mode="contained"
+            compact
+            labelStyle={{ fontSize: 12, color: colors.white }}
+            style={{
+              backgroundColor: colors.primary,
+              marginTop: 4,
+              marginRight: 5,
+            }}
+            loading={
+              bankDepositReportDetailsApi.loading &&
+              depositData.deposit_id === item.deposit_id
+            }
+            onPress={() => getCollectedDonationDetails(item)}
+          >
+            Download
+          </Button>
+          <Button
+            mode="contained"
+            compact
+            labelStyle={{ fontSize: 12, color: colors.white }}
+            style={{
+              backgroundColor: colors.secondary,
+              alignSelf: "flex-end",
+              marginTop: 4,
+            }}
+            onPress={() =>
+              navigation.navigate(routes.CHEQUE_DEPOSIT_DETAILS, item)
+            }
+          >
+            View Details
+          </Button>
+        </View>
       </View>
     );
   };
